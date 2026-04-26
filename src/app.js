@@ -3,12 +3,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { config } from './config.js';
-import healthRoutes from './routes/health.routes.js';
-import authRoutes from './routes/auth.routes.js';
-import usersRoutes from './routes/users.routes.js';
-import sessionsRoutes from './routes/sessions.routes.js';
-import dashboardRoutes from './routes/dashboard.routes.js';
-import resumeRoutes from './routes/resume.routes.js';
+import healthRoutes from './presentation/routes/health.routes.js';
+import authRoutes from './presentation/routes/auth.routes.js';
+import usersRoutes from './presentation/routes/users.routes.js';
+import sessionsRoutes from './presentation/routes/sessions.routes.js';
+import dashboardRoutes from './presentation/routes/dashboard.routes.js';
+import resumeRoutes from './presentation/routes/resume.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 export function createApp() {

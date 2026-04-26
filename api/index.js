@@ -1,5 +1,5 @@
 import { createApp } from '../src/app.js';
-import { pool } from '../src/db/pool.js';
+import { pool } from '../src/infrastructure/database/pool.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,7 +13,7 @@ async function ensureSchema() {
   if (schemaEnsured) return;
   try {
     // In vercel, __dirname is backend/api
-    const schemaPath = path.join(__dirname, '..', 'src', 'db', 'schema.sql');
+    const schemaPath = path.join(__dirname, '..', 'src', 'infrastructure', 'database', 'schema.sql');
     const sql = await fs.readFile(schemaPath, 'utf8');
     await pool.query(sql);
     schemaEnsured = true;

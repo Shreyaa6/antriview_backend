@@ -3,9 +3,9 @@ import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { OAuth2Client } from 'google-auth-library';
-import { createUser, findUserByEmail, sanitizeUser } from '../repositories/usersRepository.js';
-import { requireAuth, signToken } from '../middleware/auth.js';
-import { config } from '../config.js';
+import { createUser, findUserByEmail, sanitizeUser } from '../../infrastructure/repositories/usersRepository.js';
+import { requireAuth, signToken } from '../../middleware/auth.js';
+import { config } from '../../config.js';
 
 const router = Router();
 

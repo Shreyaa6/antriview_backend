@@ -1,4 +1,4 @@
-import { pool } from '../db/pool.js';
+import { pool } from '../../infrastructure/database/pool.js';
 
 function toUser(row) {
   return {

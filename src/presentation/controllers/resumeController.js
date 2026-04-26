@@ -1,6 +1,13 @@
-import * as resumeRepository from '../repositories/resumeRepository.js';
-import * as usersRepository from '../repositories/usersRepository.js';
-import * as aiService from '../services/aiService.js';
+import * as resumeRepository from '../../infrastructure/repositories/resumeRepository.js';
+import * as usersRepository from '../../infrastructure/repositories/usersRepository.js';
+import groqAIService from '../../infrastructure/services/GroqAIService.js';
+import GenerateLatexUseCase from '../../application/useCases/GenerateLatexUseCase.js';
+import ParseLatexUseCase from '../../application/useCases/ParseLatexUseCase.js';
+import EvaluateResumeUseCase from '../../application/useCases/EvaluateResumeUseCase.js';
+
+const generateLatexUseCase = new GenerateLatexUseCase(groqAIService);
+const parseLatexUseCase = new ParseLatexUseCase(groqAIService);
+const evaluateResumeUseCase = new EvaluateResumeUseCase(groqAIService, resumeRepository);
 import fs from 'fs';
 import path from 'path';
 import { exec } from 'child_process';
@@ -63,7 +70,7 @@ export const evaluateResume = async (req, res, next) => {
     let targetRole = rawTargetRole;
 
     if (rawText) {
-      const feedback = await aiService.evaluateResumeAI({ 
+      const feedback = await evaluateResumeUseCase.execute({ 
         rawText, 
         target_role: targetRole || 'Software Engineer' 
       });
@@ -81,7 +88,7 @@ export const evaluateResume = async (req, res, next) => {
       return res.status(400).json({ message: 'Resume data or raw text is required' });
     }
 
-    const feedback = await aiService.evaluateResumeAI(resumeData);
+    const feedback = await evaluateResumeUseCase.execute(resumeData);
     
     if (resumeId) {
       await resumeRepository.saveFeedback(resumeId, feedback);
@@ -96,7 +103,7 @@ export const evaluateResume = async (req, res, next) => {
 export const generateLatex = async (req, res, next) => {
   try {
     const { data } = req.body;
-    const latex = await aiService.generateLatexFromJSON(data);
+    const latex = await generateLatexUseCase.execute(data);
     res.json({ latex });
   } catch (error) {
     next(error);
@@ -106,7 +113,7 @@ export const generateLatex = async (req, res, next) => {
 export const parseLatex = async (req, res, next) => {
   try {
     const { latex_code } = req.body;
-    const data = await aiService.parseLatexToJSON(latex_code);
+    const data = await parseLatexUseCase.execute(latex_code);
     res.json({ data });
   } catch (error) {
     next(error);

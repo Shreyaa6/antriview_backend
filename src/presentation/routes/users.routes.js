@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-import { requireAuth } from '../middleware/auth.js';
-import { findUserByEmail, sanitizeUser, updateUserByEmail } from '../repositories/usersRepository.js';
+import { requireAuth } from '../../middleware/auth.js';
+import { findUserByEmail, sanitizeUser, updateUserByEmail } from '../../infrastructure/repositories/usersRepository.js';
 
 const router = Router();
 

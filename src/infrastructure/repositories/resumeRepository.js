@@ -1,4 +1,4 @@
-import { pool } from '../db/pool.js';
+import { pool } from '../../infrastructure/database/pool.js';
 
 export const createResume = async (userId, title, targetRole, data) => {
   const client = await pool.connect();
