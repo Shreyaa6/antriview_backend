@@ -24,7 +24,11 @@ async function ensureSchema() {
 
 const app = createApp();
 
-export default async function handler(req, res) {
+// Add ensureSchema as a middleware so it runs on the first request
+// without blocking the module export
+app.use(async (req, res, next) => {
   await ensureSchema();
-  return app(req, res);
-}
+  next();
+});
+
+export default app;

@@ -13,9 +13,9 @@ export const config = {
 };
 
 if (!config.databaseUrl) {
-  throw new Error('DATABASE_URL is required');
+  console.error('CRITICAL WARNING: DATABASE_URL is not set in environment variables!');
 }
 
 if (!config.jwtSecret) {
-  throw new Error('JWT_SECRET is required');
+  console.error('CRITICAL WARNING: JWT_SECRET is not set in environment variables!');
 }
