@@ -1,21 +1,14 @@
-import * as resumeRepository from '../../infrastructure/repositories/resumeRepository.js';
-import * as usersRepository from '../../infrastructure/repositories/usersRepository.js';
-import groqAIService from '../../infrastructure/services/GroqAIService.js';
-import GenerateLatexUseCase from '../../application/useCases/GenerateLatexUseCase.js';
-import ParseLatexUseCase from '../../application/useCases/ParseLatexUseCase.js';
-import EvaluateResumeUseCase from '../../application/useCases/EvaluateResumeUseCase.js';
+export const makeResumeController = ({
+  generateLatexUseCase,
+  parseLatexUseCase,
+  evaluateResumeUseCase,
+  compileResumeUseCase,
+  resumeRepository,
+  usersRepository
+}) => {
 
-const generateLatexUseCase = new GenerateLatexUseCase(groqAIService);
-const parseLatexUseCase = new ParseLatexUseCase(groqAIService);
-const evaluateResumeUseCase = new EvaluateResumeUseCase(groqAIService, resumeRepository);
-import fs from 'fs';
-import path from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 
-const execPromise = promisify(exec);
-
-export const createResume = async (req, res, next) => {
+  const createResume = async (req, res, next) => {
   try {
     const { title, target_role, data } = req.body;
     const user = await usersRepository.findUserByEmail(req.auth.email);
@@ -28,7 +21,7 @@ export const createResume = async (req, res, next) => {
   }
 };
 
-export const getAllResumes = async (req, res, next) => {
+  const getAllResumes = async (req, res, next) => {
   try {
     const user = await usersRepository.findUserByEmail(req.auth.email);
     if (!user) return res.status(404).json({ message: 'User not found' });
@@ -40,7 +33,7 @@ export const getAllResumes = async (req, res, next) => {
   }
 };
 
-export const getResumeById = async (req, res, next) => {
+  const getResumeById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const resume = await resumeRepository.getResumeById(id);
@@ -51,7 +44,7 @@ export const getResumeById = async (req, res, next) => {
   }
 };
 
-export const updateResume = async (req, res, next) => {
+  const updateResume = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { title, target_role, data, latex_code } = req.body;
@@ -62,7 +55,7 @@ export const updateResume = async (req, res, next) => {
   }
 };
 
-export const evaluateResume = async (req, res, next) => {
+  const evaluateResume = async (req, res, next) => {
   try {
     const { id, data, rawText, target_role: rawTargetRole } = req.body;
     let resumeData = data;
@@ -100,7 +93,7 @@ export const evaluateResume = async (req, res, next) => {
   }
 };
 
-export const generateLatex = async (req, res, next) => {
+  const generateLatex = async (req, res, next) => {
   try {
     const { data } = req.body;
     const latex = await generateLatexUseCase.execute(data);
@@ -110,7 +103,7 @@ export const generateLatex = async (req, res, next) => {
   }
 };
 
-export const parseLatex = async (req, res, next) => {
+  const parseLatex = async (req, res, next) => {
   try {
     const { latex_code } = req.body;
     const data = await parseLatexUseCase.execute(latex_code);
@@ -120,26 +113,24 @@ export const parseLatex = async (req, res, next) => {
   }
 };
 
-export const compileResume = async (req, res, next) => {
-  try {
-    const { latex_code, title } = req.body;
-    if (!latex_code) return res.status(400).json({ message: 'LaTeX code is required' });
+  const compileResume = async (req, res, next) => {
+    try {
+      const { latex_code, title } = req.body;
+      const result = await compileResumeUseCase.execute(latex_code, title);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  };
 
-    // For now, since pdflatex might not be installed, we return a mock PDF or just the tex file
-    // In a real environment, we would save to a temp file, run pdflatex, and stream the result
-    const tempDir = path.join(process.cwd(), 'temp');
-    if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
-    
-    const fileName = `${title.replace(/\s+/g, '_')}_${Date.now()}`;
-    const texPath = path.join(tempDir, `${fileName}.tex`);
-    fs.writeFileSync(texPath, latex_code);
-
-    // MOCK PDF: Just return the tex file for now as 'pdf' to show flow
-    // res.setHeader('Content-Type', 'application/pdf');
-    // res.download(texPath); 
-    
-    res.json({ message: 'LaTeX compilation triggered', fileName: `${fileName}.tex`, content: latex_code });
-  } catch (error) {
-    next(error);
-  }
+  return {
+    createResume,
+    getAllResumes,
+    getResumeById,
+    updateResume,
+    evaluateResume,
+    generateLatex,
+    parseLatex,
+    compileResume
+  };
 };

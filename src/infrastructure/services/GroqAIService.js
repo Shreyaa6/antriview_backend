@@ -41,4 +41,4 @@ class GroqAIService {
   }
 }
 
-export default new GroqAIService();
+export default GroqAIService;
