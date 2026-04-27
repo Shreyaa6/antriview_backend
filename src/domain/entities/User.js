@@ -15,9 +15,11 @@
  *     - It does NOT know how to persist itself (that's the Repository's job).
  *
  *  3. ENCAPSULATION:
- *     - Factory method `createUser()` ensures a User is always created in a valid state.
+ *     - Factory method `createUserEntity()` ensures a User is always created in a valid state.
  *     - Default values are applied here, not scattered across the codebase.
  */
+
+import { computeStreak } from '../../lib/streak.js';
 
 /**
  * Default skill categories for a new user.
@@ -38,6 +40,73 @@ const DEFAULT_STATS = {
   hr: { sessions: 0, progress: 0 },
   dev: { sessions: 0, progress: 0 },
 };
+
+/**
+ * User Entity Class.
+ *
+ * Encapsulates user state and business logic (e.g., addSession, streak).
+ * Used by AddSessionUseCase to mutate user state before persisting.
+ *
+ * Design Pattern: RICH DOMAIN MODEL
+ * - Entity contains behavior (addSession) not just data.
+ * - Business rules are enforced inside the entity.
+ */
+export default class User {
+  constructor({ email, name, stats, history, streak, lastSessionDate, selectedPersona, resumeData, skills }) {
+    this.email = email;
+    this.name = name;
+    this.stats = stats || {};
+    this.history = history || [];
+    this.streak = streak || 0;
+    this.lastSessionDate = lastSessionDate;
+    this.selectedPersona = selectedPersona;
+    this.resumeData = resumeData;
+    this.skills = skills || [];
+  }
+
+  /**
+   * Add a session and update all related stats.
+   * Domain logic: streak, skills, progress — all computed here.
+   */
+  addSession(item, track) {
+    this.history = [item, ...this.history];
+
+    if (!this.stats[track]) {
+      this.stats[track] = { sessions: 0, progress: 0 };
+    }
+    this.stats[track].sessions += 1;
+    this.stats[track].progress = Math.min(100, this.stats[track].progress + 15);
+
+    if (this.skills.length > 0) {
+      const idx = Math.floor(Math.random() * this.skills.length);
+      this.skills[idx] = {
+        ...this.skills[idx],
+        score: Math.min(100, Number(this.skills[idx].score || 0) + 10),
+      };
+    }
+
+    this.streak = computeStreak(this.streak, this.lastSessionDate);
+    this.lastSessionDate = new Date().toISOString().split('T')[0];
+  }
+
+  /**
+   * Convert entity to plain data object.
+   * Design Pattern: DATA TRANSFER OBJECT (DTO)
+   */
+  toData() {
+    return {
+      email: this.email,
+      name: this.name,
+      stats: this.stats,
+      history: this.history,
+      streak: this.streak,
+      lastSessionDate: this.lastSessionDate,
+      selectedPersona: this.selectedPersona,
+      resumeData: this.resumeData,
+      skills: this.skills,
+    };
+  }
+}
 
 /**
  * Factory function — creates a new User entity with validated defaults.
