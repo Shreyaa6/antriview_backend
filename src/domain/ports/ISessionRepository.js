@@ -15,14 +15,10 @@
  *     - Encapsulates query logic behind a clean API.
  *
  * @typedef {object} ISessionRepository
- * @property {function(object): Promise<object>} create
+ * @property {function(object): Promise<object>} createSession
  *   Insert a new session record. Returns the created record.
- * @property {function(string, number): Promise<object[]>} findByUserEmail
+ * @property {function(string, number): Promise<object[]>} getSessionsByUser
  *   Get sessions for a user, ordered by most recent, with limit.
- * @property {function(string): Promise<number>} countByUserEmail
- *   Count total sessions for a user.
- * @property {function(string): Promise<object|null>} findLatestByUserEmail
- *   Get the most recent session for a user.
  */
 
 /**
@@ -32,7 +28,7 @@
  * @throws {Error} If any required method is missing
  */
 export function assertSessionRepository(repo) {
-  const required = ['create', 'findByUserEmail', 'countByUserEmail', 'findLatestByUserEmail'];
+  const required = ['createSession', 'getSessionsByUser'];
   for (const method of required) {
     if (typeof repo[method] !== 'function') {
       throw new Error(
