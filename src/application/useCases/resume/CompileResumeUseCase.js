@@ -8,7 +8,7 @@ class CompileResumeUseCase {
       throw new Error('LaTeX code is required');
     }
 
-    const fileName = `${title.replace(/\\s+/g, '_')}_${Date.now()}`;
+    const fileName = `${title.replace(/\s+/g, '_')}_${Date.now()}`;
     await this.fileService.saveTempFile(`${fileName}.tex`, latexCode);
 
     // Mock PDF generation by returning the .tex file metadata
