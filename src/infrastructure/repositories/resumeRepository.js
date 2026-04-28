@@ -91,3 +91,11 @@ export const saveFeedback = async (resumeId, feedback) => {
   );
   return res.rows[0];
 };
+
+export const deleteResume = async (id) => {
+  const res = await pool.query(
+    'DELETE FROM resumes WHERE id = $1 RETURNING id',
+    [id]
+  );
+  return res.rows[0] ?? null;
+};
