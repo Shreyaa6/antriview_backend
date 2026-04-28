@@ -22,13 +22,9 @@ async function ensureSchema() {
   }
 }
 
-const app = createApp();
+// Ensure schema is loaded before creating the app
+await ensureSchema();
 
-// Add ensureSchema as a middleware so it runs on the first request
-// without blocking the module export
-app.use(async (req, res, next) => {
-  await ensureSchema();
-  next();
-});
+const app = createApp();
 
 export default app;
