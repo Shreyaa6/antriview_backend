@@ -11,6 +11,7 @@ export const makeResumeRoutes = (resumeController) => {
   router.get('/', resumeController.getAllResumes);
   router.get('/:id', resumeController.getResumeById);
   router.put('/:id', resumeController.updateResume);
+  router.delete('/:id', resumeController.deleteResume);
 
   router.post('/evaluate', resumeController.evaluateResume);
   router.post('/generate-latex', resumeController.generateLatex);

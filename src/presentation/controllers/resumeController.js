@@ -123,6 +123,17 @@ export const makeResumeController = ({
     }
   };
 
+  const deleteResume = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const deleted = await resumeRepository.deleteResume(id);
+      if (!deleted) return res.status(404).json({ message: 'Resume not found' });
+      res.json({ message: 'Resume deleted successfully' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   return {
     createResume,
     getAllResumes,
@@ -131,6 +142,7 @@ export const makeResumeController = ({
     evaluateResume,
     generateLatex,
     parseLatex,
-    compileResume
+    compileResume,
+    deleteResume
   };
 };

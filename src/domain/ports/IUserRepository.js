@@ -24,11 +24,11 @@
  * native interfaces. The concrete implementation must follow this contract.
  *
  * @typedef {object} IUserRepository
- * @property {function(string): Promise<object|null>} findByEmail
+ * @property {function(string): Promise<object|null>} findUserByEmail
  *   Find a user by their email address. Returns null if not found.
- * @property {function(object): Promise<object>} create
+ * @property {function(object): Promise<object>} createUser
  *   Create a new user. Returns the created user record.
- * @property {function(string, object): Promise<object>} updateByEmail
+ * @property {function(string, object): Promise<object>} updateUserByEmail
  *   Update a user by email. Returns the updated user record.
  */
 
@@ -43,7 +43,7 @@
  * @throws {Error} If any required method is missing
  */
 export function assertUserRepository(repo) {
-  const required = ['findByEmail', 'create', 'updateByEmail'];
+  const required = ['findUserByEmail', 'createUser', 'updateUserByEmail'];
   for (const method of required) {
     if (typeof repo[method] !== 'function') {
       throw new Error(

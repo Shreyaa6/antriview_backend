@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { findUserByEmail, sanitizeUser } from '../../infrastructure/repositories/usersRepository.js';
-import { requireAuth, signToken } from '../../middleware/auth.js';
+import { requireAuth } from '../../middleware/auth.js';
 import { config } from '../../config.js';
 
 export const makeAuthRoutes = ({ signupUseCase, loginUseCase, googleLoginUseCase }) => {
@@ -26,7 +26,7 @@ export const makeAuthRoutes = ({ signupUseCase, loginUseCase, googleLoginUseCase
     try {
       const { email, name, password } = signupSchema.parse(req.body);
       const result = await signupUseCase.execute(email, name, password);
-      return res.status(201).json(result);
+      return res.status(201).json({ token: result.token, user: sanitizeUser(result.user) });
     } catch (error) {
       if (error.message === 'Email already exists') {
         return res.status(409).json({ message: error.message });
@@ -39,7 +39,7 @@ export const makeAuthRoutes = ({ signupUseCase, loginUseCase, googleLoginUseCase
     try {
       const { email, password } = loginSchema.parse(req.body);
       const result = await loginUseCase.execute(email, password);
-      return res.json(result);
+      return res.json({ token: result.token, user: sanitizeUser(result.user) });
     } catch (error) {
       if (error.message === 'Invalid credentials') {
         return res.status(401).json({ message: error.message });
@@ -52,7 +52,7 @@ export const makeAuthRoutes = ({ signupUseCase, loginUseCase, googleLoginUseCase
     try {
       const { credential } = googleLoginSchema.parse(req.body);
       const result = await googleLoginUseCase.execute(credential);
-      return res.json(result);
+      return res.json({ token: result.token, user: sanitizeUser(result.user) });
     } catch (error) {
       if (error.message.includes('Google auth is not configured')) {
         return res.status(503).json({ message: error.message });
