@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS resumes (
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   target_role TEXT NOT NULL,
+  latex_code TEXT NOT NULL DEFAULT '',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
