@@ -1,10 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
 
-export function signToken(email) {
-  return jwt.sign({ email }, config.jwtSecret, { expiresIn: '7d' });
-}
-
 export function requireAuth(req, res, next) {
   const header = req.headers.authorization ?? '';
   const [scheme, token] = header.split(' ');
