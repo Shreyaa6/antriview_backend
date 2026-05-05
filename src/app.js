@@ -9,6 +9,7 @@ import { makeUsersRoutes } from './presentation/routes/users.routes.js';
 import { makeSessionsRoutes } from './presentation/routes/sessions.routes.js';
 import { makeDashboardRoutes } from './presentation/routes/dashboard.routes.js';
 import { makeResumeRoutes } from './presentation/routes/resume.routes.js';
+import { makeInterviewRoutes } from './presentation/routes/interview.routes.js';
 import { makeResumeController } from './presentation/controllers/resumeController.js';
 import { diContainer } from './diContainer.js';
 import { pool } from './infrastructure/database/pool.js';
@@ -51,6 +52,10 @@ export function createApp() {
   });
   const dashboardRoutes = makeDashboardRoutes({ pool });
   const resumeRouter = makeResumeRoutes(resumeController);
+  const interviewRoutes = makeInterviewRoutes({
+    generateInterviewQuestionsUseCase: useCases.generateInterviewQuestionsUseCase,
+    evaluateInterviewAnswerUseCase: useCases.evaluateInterviewAnswerUseCase
+  });
 
   app.get('/', (_req, res) => res.json({ service: 'antriview-backend', ok: true }));
   
@@ -60,6 +65,7 @@ export function createApp() {
   app.use('/api/sessions', sessionsRoutes);
   app.use('/api/dashboard', dashboardRoutes);
   app.use('/api/resume', resumeRouter);
+  app.use('/api/interview', interviewRoutes);
 
   app.use(errorHandler);
 

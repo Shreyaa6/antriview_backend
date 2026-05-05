@@ -14,6 +14,8 @@ import SignupUseCase from './application/useCases/auth/SignupUseCase.js';
 import LoginUseCase from './application/useCases/auth/LoginUseCase.js';
 import GoogleLoginUseCase from './application/useCases/auth/GoogleLoginUseCase.js';
 import AddSessionUseCase from './application/useCases/sessions/AddSessionUseCase.js';
+import GenerateInterviewQuestionsUseCase from './application/useCases/interview/GenerateInterviewQuestionsUseCase.js';
+import EvaluateInterviewAnswerUseCase from './application/useCases/interview/EvaluateInterviewAnswerUseCase.js';
 
 // 1. Instantiate Infrastructure
 const aiService = new GroqAIService();
@@ -35,6 +37,8 @@ const signupUseCase = new SignupUseCase(usersRepository, tokenService);
 const loginUseCase = new LoginUseCase(usersRepository, tokenService);
 const googleLoginUseCase = new GoogleLoginUseCase(usersRepository, tokenService);
 const addSessionUseCase = new AddSessionUseCase(usersRepository, sessionRepository);
+const generateInterviewQuestionsUseCase = new GenerateInterviewQuestionsUseCase();
+const evaluateInterviewAnswerUseCase = new EvaluateInterviewAnswerUseCase();
 
 // 3. Export configured dependencies
 export const diContainer = {
@@ -54,6 +58,8 @@ export const diContainer = {
     signupUseCase,
     loginUseCase,
     googleLoginUseCase,
-    addSessionUseCase
+    addSessionUseCase,
+    generateInterviewQuestionsUseCase,
+    evaluateInterviewAnswerUseCase
   }
 };
