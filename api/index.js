@@ -22,8 +22,10 @@ async function ensureSchema() {
   }
 }
 
+console.log('[Vercel Function] api/index.js initializing');
 // Ensure schema is loaded before creating the app
 await ensureSchema();
+console.log('[Vercel Function] api/index.js schema check complete');
 
 const app = createApp();
 
